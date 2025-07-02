@@ -1,55 +1,21 @@
 import pytest
 import requests
-import os
 from endpoints.create_meme import CreateMeme
 from endpoints.update_meme import UpdateMeme
 from endpoints.delete_meme import DeleteMeme
 from endpoints.get_one_meme import GetOneMeme
 from endpoints.get_all_meme import GetAllMeme
-
-
-TOKEN_FILE = 'tests/token.txt'
-
-
-def read_token_from_file():
-    if os.path.exists(TOKEN_FILE):
-        with open(TOKEN_FILE, 'r') as f:
-            return f.read().strip()
-    return None
-
-
-def write_token_to_file(token):
-    with open(TOKEN_FILE, 'w') as f:
-        f.write(token)
-
-
-def check_token_validity(token):
-    response = requests.get(f'http://167.172.172.115:52355/authorize/{token}')
-    if response.status_code == 200:
-        if 'Token is alive' in response.text:
-            return True
-        else:
-            return False
-    else:
-        return False
-
-
-def fetch_new_token():
-    body = {"name": 'PeterB92'}
-    response = requests.post('http://167.172.172.115:52355/authorize', json=body)
-    data = response.json()
-    token = list(data.values())[0]
-    return token
+from endpoints.authorize import Authorize
 
 
 @pytest.fixture(scope='session')
-def authorize():
-    token = read_token_from_file()
-    if token and check_token_validity(token):
+def authorize(authorize_endpoint):
+    token = authorize_endpoint.read_token_from_file()
+    if token and authorize_endpoint.check_token_validity(token):
         return token
     else:
-        new_token = fetch_new_token()
-        write_token_to_file(new_token)
+        new_token = authorize_endpoint.fetch_new_token()
+        authorize_endpoint.write_token_to_file(new_token)
         return new_token
 
 
@@ -64,7 +30,10 @@ def adding_meme(authorize):
     headers = {'Authorization': f'{authorize}'}
     response = requests.post('http://167.172.172.115:52355/meme', json=body, headers=headers)
     object_id = response.json()['id']
-    return object_id
+    yield object_id
+    delete_response = requests.delete(f'http://167.172.172.115:52355/meme/{object_id}', headers=headers)
+    print(delete_response.text)
+    assert delete_response.status_code == 200
 
 
 @pytest.fixture()
@@ -90,3 +59,8 @@ def one_meme_endpoint(authorize):
 @pytest.fixture()
 def all_meme_endpoint(authorize):
     return GetAllMeme(authorize)
+
+
+@pytest.fixture(scope='session')
+def authorize_endpoint():
+    return Authorize(authorize)

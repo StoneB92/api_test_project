@@ -3,6 +3,11 @@ import requests
 from endpoints.create_meme import CreateMeme
 
 
+def test_get_token(authorize_endpoint):
+    authorize_endpoint.fetch_new_token()
+    authorize_endpoint.check_response_status_code_is_correct()
+
+
 def test_list_of_all_memes(all_meme_endpoint):
     all_meme_endpoint.all_meme()
     all_meme_endpoint.check_response_status_code_is_correct()
