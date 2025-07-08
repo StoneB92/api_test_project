@@ -20,7 +20,7 @@ def authorize(authorize_endpoint):
 
 
 @pytest.fixture()
-def adding_meme(authorize):
+def adding_meme_teardown(authorize):
     body = {
         "text": "calm down",
         "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
@@ -34,6 +34,20 @@ def adding_meme(authorize):
     delete_response = requests.delete(f'http://167.172.172.115:52355/meme/{object_id}', headers=headers)
     print(delete_response.text)
     assert delete_response.status_code == 200
+
+
+@pytest.fixture()
+def adding_meme(authorize):
+    body = {
+        "text": "calm down",
+        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
+        "tags": ["lemur", "stop"],
+        "info": {"color": ['red', "white"]}
+    }
+    headers = {'Authorization': f'{authorize}'}
+    response = requests.post('http://167.172.172.115:52355/meme', json=body, headers=headers)
+    object_id = response.json()['id']
+    return object_id
 
 
 @pytest.fixture()

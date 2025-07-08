@@ -8,3 +8,13 @@ class Endpoint:
         print(self.response.status_code)
         print(self.response.text)
         assert self.response.status_code == 200
+
+    def status_code_in_case_of_error(self):
+        print(self.response.status_code)
+        print(self.response.text)
+        assert self.response.status_code == 400
+
+    def status_code_in_case_without_authorize(self):
+        print(self.response.status_code)
+        print(self.response.text)
+        assert self.response.status_code == 401
