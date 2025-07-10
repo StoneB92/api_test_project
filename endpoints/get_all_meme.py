@@ -7,3 +7,8 @@ class GetAllMeme(Endpoint):
         headers = headers if headers else self.headers
         self.response = requests.get(self.url, headers=headers)
         return self.response
+
+    def all_meme_without_authorize(self):
+        headers = None
+        self.response = requests.get(self.url, headers=headers)
+        return self.response
