@@ -134,4 +134,3 @@ def test_adding_meme_without_body(create_meme_endpoint):
     body = {}
     create_meme_endpoint.new_meme(body)
     create_meme_endpoint.status_code_in_case_of_error()
-
