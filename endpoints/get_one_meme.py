@@ -12,3 +12,4 @@ class GetOneMeme(Endpoint):
         headers = None
         self.response = requests.get(f'{self.url}/{adding_meme}', headers=headers)
         return self.response
+

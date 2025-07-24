@@ -59,12 +59,18 @@ def test_adding_meme_with_another_url(create_meme_endpoint, delete_meme_endpoint
     assert delete_response.status_code == 200
 
 
-@pytest.mark.parametrize('body_tags', ['lemur', ' ', '', '!@#$%^&*()', '!@#test'])
+@pytest.mark.parametrize('body_tags', [
+    ['lemur'],
+    [' '],
+    [''],
+    ['!@#$%^&*()'],
+    ['!@#test']
+])
 def test_adding_meme_with_another_tags(create_meme_endpoint, delete_meme_endpoint, body_tags):
     body = {
         "text": "calm down",
         "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
-        "tags": [body_tags],
+        "tags": body_tags,
         "info": {"color": ['red', "white"]}
     }
     response = create_meme_endpoint.new_meme(body)
@@ -74,6 +80,31 @@ def test_adding_meme_with_another_tags(create_meme_endpoint, delete_meme_endpoin
     assert create_meme['url'] == body['url']
     assert create_meme['tags'] == body['tags']
     assert create_meme['info']['color'] == body['info']['color']
+    delete_response = delete_meme_endpoint.delete_meme(object_id)
+    print(delete_response.text)
+    assert delete_response.status_code == 200
+
+
+@pytest.mark.parametrize('body_info', [
+    {"color": ['red', "white"]},
+    {"color": [' ', "123"]},
+    {"color": ['', "$#@$!"]},
+    {"color": ['2312test', "___"]}
+])
+def test_adding_meme_with_another_info(create_meme_endpoint, delete_meme_endpoint, body_info):
+    body = {
+        "text": "calm down",
+        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
+        "tags": ["lemur", "stop"],
+        "info": body_info
+    }
+    response = create_meme_endpoint.new_meme(body)
+    create_meme = response.json()
+    object_id = response.json()['id']
+    assert create_meme['text'] == body['text']
+    assert create_meme['url'] == body['url']
+    assert create_meme['tags'] == body['tags']
+    assert create_meme['info']['color'] == body_info['color']
     delete_response = delete_meme_endpoint.delete_meme(object_id)
     print(delete_response.text)
     assert delete_response.status_code == 200

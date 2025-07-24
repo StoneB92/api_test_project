@@ -1,149 +1,67 @@
-def test_update_meme_text_int(update_meme_endpoint, adding_meme_teardown):
+import pytest
+
+
+@pytest.mark.parametrize('invalid_text', [45234, [11, 43], [{"test": 1, "test2": 2}]])
+def test_update_meme_invalid_text(update_meme_endpoint, adding_meme_teardown, invalid_text):
     body = {
         "id": adding_meme_teardown,
-        "text": 45234,
+        "text": invalid_text,
         "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
         "tags": ["lemur", "stop"],
         "info": {"color": ['red', "white", "black"]}
     }
     update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
+    update_meme_endpoint.assert_status_code_is_400_on_error()
 
 
-def test_update_meme_text_array(update_meme_endpoint, adding_meme_teardown):
+@pytest.mark.parametrize('invalid_url', [1, [1, 2], [{"test": 1, "test2": 2}]])
+def test_update_meme_invalid_url(update_meme_endpoint, adding_meme_teardown, invalid_url):
     body = {
         "id": adding_meme_teardown,
-        "text": [11, 43],
-        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
+        "text": "calm down",
+        "url": invalid_url,
         "tags": ["lemur", "stop"],
         "info": {"color": ['red', "white", "black"]}
     }
     update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
+    update_meme_endpoint.assert_status_code_is_400_on_error()
 
 
-def test_update_meme_text_object(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": {"test": 1, "test2": 2},
-        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
-        "tags": ["lemur", "stop"],
-        "info": {"color": ['red', "white", "black"]}
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_url_int(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": "calm down",
-        "url": 1,
-        "tags": ["lemur", "stop"],
-        "info": {"color": ['red', "white", "black"]}
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_url_array(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": "calm down",
-        "url": [1, 2],
-        "tags": ["lemur", "stop"],
-        "info": {"color": ['red', "white", "black"]}
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_url_object(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": "calm down",
-        "url": {"test": 1, "test2": 2},
-        "tags": ["lemur", "stop"],
-        "info": {"color": ['red', "white", "black"]}
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_tags_int(update_meme_endpoint, adding_meme_teardown):
+@pytest.mark.parametrize('invalid_tags', [
+    1,
+    "test",
+    [{"test": 1, "test2": 2}],
+    None,
+    {},
+    [123],
+    [None]
+])
+def test_update_meme_invalid_tags(update_meme_endpoint, adding_meme_teardown, invalid_tags):
     body = {
         "id": adding_meme_teardown,
         "text": "calm down",
         "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
-        "tags": 1,
+        "tags": invalid_tags,
         "info": {"color": ['red', "white", "black"]}
     }
     update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
+    update_meme_endpoint.assert_status_code_is_400_on_error()
 
 
-def test_update_meme_tags_string(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": "calm down",
-        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
-        "tags": "test",
-        "info": {"color": ['red', "white", "black"]}
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_tags_object(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": "calm down",
-        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
-        "tags": {"test": 1, "test2": 2},
-        "info": {"color": ['red', "white", "black"]}
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_info_int(update_meme_endpoint, adding_meme_teardown):
+@pytest.mark.parametrize('invalid_info', [1, "1", [1, 2]])
+def test_update_meme_invalid_info(update_meme_endpoint, adding_meme_teardown, invalid_info):
     body = {
         "id": adding_meme_teardown,
         "text": "calm down",
         "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
         "tags": ["lemur", "stop"],
-        "info": 1
+        "info": invalid_info
     }
     update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_info_string(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": "calm down",
-        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
-        "tags": ["lemur", "stop"],
-        "info": "1"
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
-
-def test_update_meme_info_array(update_meme_endpoint, adding_meme_teardown):
-    body = {
-        "id": adding_meme_teardown,
-        "text": "calm down",
-        "url": "https://infoglaz.ru/wp-content/uploads/1387527274_001.jpg",
-        "tags": ["lemur", "stop"],
-        "info": [1, 2]
-    }
-    update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
+    update_meme_endpoint.assert_status_code_is_400_on_error()
 
 
 def test_update_meme_without_body(update_meme_endpoint, adding_meme_teardown):
     body = {}
     update_meme_endpoint.update_meme(adding_meme_teardown, body)
-    update_meme_endpoint.status_code_in_case_of_error()
-
+    update_meme_endpoint.assert_status_code_is_400_on_error()
